@@ -1,0 +1,16 @@
+Description: ServiceResolution Converter to display full service resolution, including framerate and interlace/progressive flag, displays nothing if no video available e.g. Radio
+
+Usage example (display full service resolution):
+
+<widget source="session.CurrentService" render="Label" position="575,198" size="280,40" backgroundColor="#00616161" transparent="1" font="Regular;24" halign="left" foregroundColor="#00ffffff">
+	<convert type="ServiceResolution">VideoInfo</convert>
+</widget>
+
+
+Usage example (hide pixmap):
+
+<widget source="session.CurrentService" render="Pixmap" pixmap="~/resicon.png" position="525,200" size="40,40" zPosition="1" alphatest="blend">
+	<convert type="ServiceResolution">VideoInfo</convert>
+	<convert type="ConditionalShowHide" />
+</widget>
+
