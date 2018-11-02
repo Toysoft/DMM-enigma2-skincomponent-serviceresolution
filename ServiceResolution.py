@@ -25,12 +25,16 @@ from Components.Element import cached
 from os import path
 
 class ServiceResolution(Converter, object):
-	VIDEO_PARAMS = 0
+	VIDEO_INFO = 0
+	VIDEO_INFOCODEC = 1
+	VIDEO_CODEC = 2
 
 	def __init__(self, type):
 		Converter.__init__(self, type)
 		self.type, self.interesting_events = {
-				"VideoInfo": (self.VIDEO_PARAMS, (iPlayableService.evVideoSizeChanged, iPlayableService.evVideoProgressiveChanged, iPlayableService.evVideoFramerateChanged, iPlayableService.evUpdatedInfo,)),
+				"VideoInfo": (self.VIDEO_INFO, (iPlayableService.evVideoSizeChanged, iPlayableService.evVideoProgressiveChanged, iPlayableService.evVideoFramerateChanged, iPlayableService.evUpdatedInfo,)),
+				"VideoInfoCodec": (self.VIDEO_INFOCODEC, (iPlayableService.evVideoSizeChanged, iPlayableService.evVideoProgressiveChanged, iPlayableService.evVideoFramerateChanged, iPlayableService.evUpdatedInfo,)),
+				"VideoCodec": (self.VIDEO_CODEC, (iPlayableService.evVideoSizeChanged, iPlayableService.evVideoProgressiveChanged, iPlayableService.evVideoFramerateChanged, iPlayableService.evUpdatedInfo,)),
 			}[type]
 		self.need_wa = iPlayableService.evVideoSizeChanged in self.interesting_events
 
@@ -44,7 +48,7 @@ class ServiceResolution(Converter, object):
 		if not info:
 			return False
 
-		if self.type == self.VIDEO_PARAMS:
+		if self.type == self.VIDEO_INFO:
 			frame_rate = info.getInfo(iServiceInformation.sFrameRate)
 			if frame_rate > 0:
 				return True
@@ -62,7 +66,7 @@ class ServiceResolution(Converter, object):
 		if not info:
 			return ""
 
-		if self.type == self.VIDEO_PARAMS:
+		if self.type in [self.VIDEO_INFO, self.VIDEO_INFOCODEC]:
 			xres = None
 			if path.exists("/proc/stb/vmpeg/0/xres"):
 				f = open("/proc/stb/vmpeg/0/xres", "r")
@@ -102,7 +106,28 @@ class ServiceResolution(Converter, object):
 				x = ""
 				frame_rate = ""
 				p = ""
-			return "%s%s%s%s%s" % (xres, x, yres, p, frame_rate)
+			if self.type == self.VIDEO_INFO:
+				return "%s%s%s%s%s" % (xres, x, yres, p, frame_rate)
+		if self.type in [self.VIDEO_INFOCODEC, self.VIDEO_CODEC]:
+			codec = None
+			if path.exists("/proc/stb/vmpeg/0/codec"):
+				f = open("/proc/stb/vmpeg/0/codec", "r")
+				try:
+					codec = f.read().strip()
+					codec = codec.replace('H.264 (MPEG4 AVC)', 'H.264/AVC').replace('H.265 (HEVC)', 'H.265/HEVC')
+				except:
+					pass
+				f.close()
+			if self.type == self.VIDEO_INFOCODEC:
+				if codec and xres != "" :
+					return "%s%s%s%s%s [%s]" % (xres, x, yres, p, frame_rate, codec)
+				else:
+					return "%s%s%s%s%s" % (xres, x, yres, p, frame_rate)
+			if self.type == self.VIDEO_CODEC:
+				if codec:
+					return codec
+				else:
+					return ""
 		return ""
 
 	text = property(getText)
@@ -114,7 +139,7 @@ class ServiceResolution(Converter, object):
 		if not info:
 			return -1
 
-		if self.type == self.VIDEO_PARAMS:
+		if self.type == self.VIDEO_INFO:
 			return -1 if info.getInfo(iServiceInformation.sVideoHeight) < 0 or info.getInfo(iServiceInformation.sFrameRate) < 0 or info.getInfo(iServiceInformation.sProgressive) < 0 else -2
 		return -1
 

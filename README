@@ -1,11 +1,14 @@
 Description: ServiceResolution Converter to display full service resolution, including framerate and interlace/progressive flag, displays nothing if no video available e.g. Radio
 
+VideoInfo 	--> 1920x1080i50
+VideoInfoCodec 	--> 1920x1080i50 [H.264/AVC]
+VideoCodec 	--> H.264/AVC
+
 Usage example (display full service resolution):
 
 <widget source="session.CurrentService" render="Label" position="575,198" size="280,40" backgroundColor="#00616161" transparent="1" font="Regular;24" halign="left" foregroundColor="#00ffffff">
 	<convert type="ServiceResolution">VideoInfo</convert>
 </widget>
-
 
 Usage example (hide pixmap):
 
@@ -13,4 +16,3 @@ Usage example (hide pixmap):
 	<convert type="ServiceResolution">VideoInfo</convert>
 	<convert type="ConditionalShowHide" />
 </widget>
-
