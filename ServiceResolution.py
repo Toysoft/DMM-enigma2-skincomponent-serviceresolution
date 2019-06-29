@@ -66,10 +66,18 @@ class ServiceResolution(Converter, object):
 
 		if self.type == self.VIDEO_INFO:
 			frame_rate = info.getInfo(iServiceInformation.sFrameRate)
-			if frame_rate > 0:
-				return True
+			if model in ["one"]:
+				xres = info.getInfo(iServiceInformation.sVideoWidth)
+				yres = info.getInfo(iServiceInformation.sVideoHeight)
+				if frame_rate > 0 and xres > 0 and yres > 0:
+					return True
+				else:
+					return False
 			else:
-				return False
+				if frame_rate > 0:
+					return True
+				else:
+					return False
 
 		return False
 
@@ -143,7 +151,9 @@ class ServiceResolution(Converter, object):
 						pass
 					f.close()
 			if self.type == self.VIDEO_INFOCODEC:
-				if codec and xres != "" :
+				if xres in ["","0"]:
+					return ""
+				elif codec:
 					return "%s%s%s%s%s [%s]" % (xres, x, yres, p, frame_rate, codec)
 				else:
 					return "%s%s%s%s%s" % (xres, x, yres, p, frame_rate)
