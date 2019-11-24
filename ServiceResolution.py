@@ -118,7 +118,7 @@ class ServiceResolution(Converter, object):
 			if not progressive:
 				frame_rate *= 2
 			frame_rate = (frame_rate+500)/1000
-			if frame_rate > 0:
+			if frame_rate > 0 and xres > 0 and yres > 0:
 				xres = str(xres)
 				yres = str(yres)
 				x = "x"
