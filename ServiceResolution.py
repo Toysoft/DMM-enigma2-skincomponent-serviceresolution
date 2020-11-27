@@ -2,7 +2,7 @@
 #
 # ServiceResolution  - Converter
 #
-# Coded by dhwz (c) 2018-2019
+# Coded by dhwz (c) 2018-2020
 # E-Mail: dhwz@gmx.net
 #
 # This plugin is open source but it is NOT free software.
@@ -30,7 +30,7 @@ from enigma import iServiceInformation, iPlayableService
 from Components.Element import cached
 from os import path
 
-if model in ["one"]:
+if model in ["one", "two"]:
 	from enigma import CT_MPEG2, CT_H264, CT_MPEG1, CT_MPEG4_PART2, CT_VC1, CT_VC1_SIMPLE_MAIN, CT_H265, CT_DIVX311, CT_DIVX4, CT_SPARK, CT_VP6, CT_VP8, CT_VP9, CT_H263, CT_MJPEG, CT_REAL, CT_AVS, CT_UNKNOWN
 
 class ServiceResolution(Converter, object):
@@ -40,7 +40,7 @@ class ServiceResolution(Converter, object):
 
 	def __init__(self, type):
 		Converter.__init__(self, type)
-		if model in ["one"]:
+		if model in ["one", "two"]:
 			self.type, self.interesting_events = {
 					"VideoInfo": (self.VIDEO_INFO, (iPlayableService.evVideoSizeChanged, iPlayableService.evVideoProgressiveChanged, iPlayableService.evVideoFramerateChanged, iPlayableService.evUpdatedInfo,)),
 					"VideoInfoCodec": (self.VIDEO_INFOCODEC, (iPlayableService.evVideoSizeChanged, iPlayableService.evVideoProgressiveChanged, iPlayableService.evVideoFramerateChanged, iPlayableService.evUpdatedInfo, iPlayableService.evVideoTypeReady,)),
@@ -66,7 +66,7 @@ class ServiceResolution(Converter, object):
 
 		if self.type == self.VIDEO_INFO:
 			frame_rate = info.getInfo(iServiceInformation.sFrameRate)
-			if model in ["one"]:
+			if model in ["one", "two"]:
 				xres = info.getInfo(iServiceInformation.sVideoWidth)
 				yres = info.getInfo(iServiceInformation.sVideoHeight)
 				if frame_rate > 0 and xres > 0 and yres > 0:
@@ -134,7 +134,7 @@ class ServiceResolution(Converter, object):
 				return "%s%s%s%s%s" % (xres, x, yres, p, frame_rate)
 		if self.type in [self.VIDEO_INFOCODEC, self.VIDEO_CODEC]:
 			codec = None
-			if model in ["one"]:
+			if model in ["one", "two"]:
 				codec = info.getInfo(iServiceInformation.sVideoType)
 				codec = { CT_MPEG2 : "MPEG2", CT_H264 : "H.264/AVC", CT_MPEG1 : "MPEG1", CT_MPEG4_PART2 : "MPEG4",
 					CT_VC1 : "VC1", CT_VC1_SIMPLE_MAIN : "WMV3", CT_H265 : "H.265/HEVC", CT_DIVX311 : "DIVX3",
